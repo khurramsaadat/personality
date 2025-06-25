@@ -1,0 +1,8 @@
+{
+  "/page": "app/page.js",
+  "/cognitive-reflection/results/page": "app/cognitive-reflection/results/page.js",
+  "/empathy/page": "app/empathy/page.js",
+  "/news-judgment/page": "app/news-judgment/page.js",
+  "/cognitive-reflection/page": "app/cognitive-reflection/page.js",
+  "/bigfive/page": "app/bigfive/page.js"
+}
