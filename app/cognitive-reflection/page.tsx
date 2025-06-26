@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Toast from '../../components/Toast';
 
@@ -19,17 +19,20 @@ const questions = [
 ];
 
 export default function CognitiveReflectionPage() {
-  const [answers, setAnswers] = useState(Array(questions.length).fill(null));
+  const [answers, setAnswers] = useState<(string | null)[]>(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
   const [current, setCurrent] = useState(0);
   const [showToast, setShowToast] = useState(false);
   const router = useRouter();
 
-  const handleChange = (value: string) => {
-    const newAnswers = [...answers];
-    newAnswers[current] = value;
-    setAnswers(newAnswers);
-  };
+  const handleChange = useCallback((value: string) => {
+    console.log(`Question ${current} answered: ${value}`);
+    setAnswers(prev => {
+      const newAnswers = [...prev];
+      newAnswers[current] = value;
+      return newAnswers;
+    });
+  }, [current]);
 
   const handleRandomAnswers = () => {
     if (window.confirm('This will overwrite all your current answers with random selections. Continue?')) {
@@ -61,61 +64,130 @@ export default function CognitiveReflectionPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-10 px-2">
-      <h1 className="text-2xl font-bold mb-4">Cognitive Reflection Test</h1>
-      <p className="mb-8 text-gray-700">Here are several items that vary in difficulty.<br/>Answer as best as you can.</p>
+    <div className="max-w-4xl mx-auto py-10 px-4">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold mb-4">Cognitive Reflection Test</h1>
+        <p className="text-gray-700 max-w-2xl mx-auto">
+          Here are several items that vary in difficulty. Answer as best as you can.
+        </p>
+        <div className="mt-4 text-sm text-gray-600">
+          Question {current + 1} of {questions.length}
+        </div>
+      </div>
+
       <form onSubmit={e => { e.preventDefault(); handleNext(); }}>
-        <div className="mb-8">
+        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-8">
           {submitted && answers[current] === null && (
-            <div className="text-red-600 mb-2 flex items-center gap-2">
-              <span className="font-bold">&#33;</span> Please answer this question.
+            <div className="text-red-600 mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+              <span className="font-bold">⚠️</span> Please answer this question before continuing.
             </div>
           )}
-          <div className="mb-4 text-lg text-gray-800 font-medium">{questions[current].text}</div>
-          <div className="flex flex-col gap-2">
-            {questions[current].options.map((opt, i) => (
-              <label key={i} className={`flex items-center px-4 py-2 rounded cursor-pointer transition-colors duration-150 ${answers[current] === opt ? 'bg-gray-200' : 'bg-gray-100 hover:bg-gray-200'}`}>
+          
+          <div className="mb-6">
+            <h3 className="text-lg font-medium text-gray-900 leading-relaxed">
+              {questions[current].text}
+            </h3>
+          </div>
+
+          {/* Desktop Layout */}
+          <div className="hidden sm:block">
+            <div className="grid grid-cols-2 gap-4">
+              {questions[current].options.map((option, i) => (
+                <label
+                  key={i}
+                  className={`flex items-center p-4 rounded-lg cursor-pointer transition-all duration-200 border-2 ${
+                    answers[current] === option
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name={`question_${current}`}
+                    value={option}
+                    checked={answers[current] === option}
+                    onChange={() => handleChange(option)}
+                    className="radio-custom w-5 h-5 mr-3 cursor-pointer"
+                  />
+                  <span className="font-medium text-gray-900">{option}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile Layout */}
+          <div className="block sm:hidden space-y-3">
+            {questions[current].options.map((option, i) => (
+              <div
+                key={i}
+                className={`flex items-center p-4 rounded-lg cursor-pointer transition-all duration-200 border-2 ${
+                  answers[current] === option
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+                onClick={() => handleChange(option)}
+              >
                 <input
                   type="radio"
-                  name={`q${current}`}
-                  value={opt}
-                  checked={answers[current] === opt}
-                  onChange={() => handleChange(opt)}
-                  className="mr-2 accent-primary-600"
-                  required={current === 0}
+                  name={`question_${current}`}
+                  value={option}
+                  checked={answers[current] === option}
+                  onChange={() => {}} // Handled by div onClick
+                  className="sr-only"
                 />
-                {opt}
-              </label>
+                <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
+                  answers[current] === option
+                    ? 'border-blue-500 bg-blue-500'
+                    : 'border-gray-300'
+                }`}>
+                  {answers[current] === option && (
+                    <div className="w-2 h-2 rounded-full bg-white"></div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium text-gray-900">{option}</div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
-        <div className="w-full flex justify-center mb-2">
-          <Toast message="Random answers generated!" show={showToast} onClose={handleToastClose} />
-        </div>
-        <div className="flex justify-between mt-8">
+
+        <div className="flex justify-between items-center mb-6">
           <button
             type="button"
             onClick={handlePrev}
             disabled={current === 0}
-            className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${current === 0 ? 'text-gray-400 cursor-not-allowed bg-gray-200' : 'bg-black text-white hover:bg-gray-800'}`}
+            className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+              current === 0 
+                ? 'text-gray-400 cursor-not-allowed bg-gray-100' 
+                : 'bg-gray-800 text-white hover:bg-gray-700'
+            }`}
           >
-            &#8592;
+            ← Previous
           </button>
+          
           <button
             type="submit"
-            className="px-6 py-3 rounded-lg font-medium transition-colors duration-200 bg-black text-white hover:bg-gray-800"
+            className="px-6 py-3 rounded-lg font-medium transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700"
           >
-            {current === questions.length - 1 ? '→' : '→'}
+            {current === questions.length - 1 ? 'Submit Assessment' : 'Next →'}
           </button>
         </div>
-        <button
-          type="button"
-          onClick={handleRandomAnswers}
-          className="btn-secondary mb-4 w-full sm:w-auto px-8 py-3 text-lg mt-4"
-        >
-          Random Answers
-        </button>
+
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={handleRandomAnswers}
+            className="btn-secondary px-8 py-3 text-lg"
+          >
+            Random Answers
+          </button>
+        </div>
       </form>
+
+      <div className="w-full flex justify-center mt-4">
+        <Toast message="Random answers generated!" show={showToast} onClose={handleToastClose} />
+      </div>
     </div>
   );
 } 

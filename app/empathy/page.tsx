@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useCallback } from 'react';
 import Toast from '../../components/Toast';
-
+import { useRouter } from 'next/navigation';
 const empathyQuestions = [
   'I sometimes find it difficult to see things from the "other guy\'s" point of view.',
   'I try to look at everybody\'s side of a disagreement before I make a decision.',
@@ -22,24 +21,27 @@ const empathyQuestions = [
 ];
 
 const scale = [
-  { value: 'A', label: 'Does not describe me well' },
-  { value: 'B', label: 'Slightly describes me' },
-  { value: 'C', label: 'Neutral' },
-  { value: 'D', label: 'Mostly describes me' },
-  { value: 'E', label: 'Describes me very well' },
+  { value: '1', label: 'Does not describe me well' },
+  { value: '2', label: 'Slightly describes me' },
+  { value: '3', label: 'Neutral' },
+  { value: '4', label: 'Mostly describes me' },
+  { value: '5', label: 'Describes me very well' },
 ];
 
 export default function EmpathyPage() {
-  const [answers, setAnswers] = useState(Array(empathyQuestions.length).fill(null));
+  const [answers, setAnswers] = useState<(string | null)[]>(Array(empathyQuestions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const router = useRouter();
 
-  const handleChange = (qIdx: number, value: string) => {
-    const newAnswers = [...answers];
-    newAnswers[qIdx] = value;
-    setAnswers(newAnswers);
-  };
+  const handleChange = useCallback((questionIndex: number, value: string) => {
+    console.log(`Question ${questionIndex} answered: ${value}`);
+    setAnswers(prev => {
+      const newAnswers = [...prev];
+      newAnswers[questionIndex] = value;
+      return newAnswers;
+    });
+  }, []);
 
   const handleRandomAnswers = () => {
     if (window.confirm('This will overwrite all your current answers with random selections. Continue?')) {
@@ -55,6 +57,7 @@ export default function EmpathyPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+    
     if (!answers.includes(null)) {
       localStorage.setItem('empathyAnswers', JSON.stringify(answers));
       router.push('/empathy/results');
@@ -62,38 +65,42 @@ export default function EmpathyPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-10 px-2">
-      <h1 className="text-2xl font-bold mb-4">Empathy / Emotional Intelligence Questionnaire</h1>
-      <p className="mb-6 text-gray-700">
-        The following statements inquire about your thoughts and feelings in a variety of situations. For each item, indicate how well it describes you by choosing the appropriate letter on the scale: A, B, C, D, or E.
-      </p>
+    <div className="max-w-7xl mx-auto py-10 px-4">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold mb-4">Empathy / Emotional Intelligence Questionnaire</h1>
+        <p className="text-gray-700 max-w-4xl mx-auto">
+          The following statements inquire about your thoughts and feelings in a variety of situations. 
+          For each item, indicate how well it describes you by choosing the appropriate response on the scale.
+        </p>
+      </div>
+
       <form onSubmit={handleSubmit}>
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-separate border-spacing-y-2">
+        {/* Desktop Layout */}
+        <div className="hidden md:block overflow-x-auto rounded-lg border border-gray-200 bg-white">
+          <table className="min-w-full border-separate border-spacing-y-4 text-sm">
             <thead>
               <tr>
-                <th className="text-left font-medium">&nbsp;</th>
+                <th className="text-left font-medium whitespace-nowrap px-2 py-2">&nbsp;</th>
                 {scale.map((s) => (
-                  <th key={s.value} className="text-center font-normal text-xs">
+                  <th key={s.value} className="text-center font-normal text-xs whitespace-nowrap px-2 py-2">
                     {s.value} = {s.label}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {empathyQuestions.map((q, i) => (
-                <tr key={i} className="align-top">
-                  <td className="pr-2 text-gray-700 text-sm w-1/2">{q}</td>
+              {empathyQuestions.map((question, i) => (
+                <tr key={`desktop-q-${i}`} className="align-top">
+                  <td className="pr-2 text-gray-700 text-sm w-1/2 min-w-[180px]">{i + 1}. {question}</td>
                   {scale.map((s) => (
                     <td key={s.value} className="text-center">
                       <input
                         type="radio"
-                        name={`q${i}`}
+                        name={`question_${i}`}
                         value={s.value}
                         checked={answers[i] === s.value}
                         onChange={() => handleChange(i, s.value)}
-                        className="accent-primary-600 w-4 h-4"
-                        required={i === 0}
+                        className="radio-custom w-6 h-6"
                       />
                     </td>
                   ))}
@@ -102,27 +109,80 @@ export default function EmpathyPage() {
             </tbody>
           </table>
         </div>
-        {submitted && answers.includes(null) && (
-          <div className="text-red-600 mt-4">Please answer all questions before submitting.</div>
-        )}
-        <div className="w-full flex justify-center mb-2">
-          <Toast message="Random answers generated!" show={showToast} onClose={handleToastClose} />
+
+        {/* Mobile Layout */}
+        <div className="block md:hidden space-y-6">
+          {empathyQuestions.map((question, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+              <h3 className="font-medium text-gray-900 mb-4 text-sm leading-relaxed">
+                {question}
+              </h3>
+              <div className="space-y-3">
+                {scale.map((option) => (
+                  <div
+                    key={option.value}
+                    className={`flex items-center p-3 rounded-lg cursor-pointer transition-all duration-200 border-2 ${
+                      answers[i] === option.value
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
+                    onClick={() => handleChange(i, option.value)}
+                  >
+                    <input
+                      type="radio"
+                      name={`question_${i}`}
+                      value={option.value}
+                      checked={answers[i] === option.value}
+                      onChange={() => {}} // Handled by div onClick
+                      className="sr-only"
+                    />
+                    <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
+                      answers[i] === option.value
+                        ? 'border-blue-500 bg-blue-500'
+                        : 'border-gray-300'
+                    }`}>
+                      {answers[i] === option.value && (
+                        <div className="w-2 h-2 rounded-full bg-white"></div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">{option.value}</div>
+                      <div className="text-sm text-gray-600">{option.label}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
-        <button
-          type="button"
-          onClick={handleRandomAnswers}
-          className="btn-secondary mb-4 w-full sm:w-auto px-8 py-3 text-lg"
-        >
-          Random Answers
-        </button>
-        <button
-          type="submit"
-          className="btn-primary mt-4 px-8 py-3 text-lg w-full sm:w-auto"
-          disabled={answers.includes(null)}
-        >
-          Submit
-        </button>
+
+        {submitted && answers.includes(null) && (
+          <div className="text-red-600 mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            ⚠️ Please answer all questions before submitting.
+          </div>
+        )}
+
+        <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            type="button"
+            onClick={handleRandomAnswers}
+            className="btn-secondary px-8 py-3 text-lg"
+          >
+            Random Answers
+          </button>
+          <button
+            type="submit"
+            className="btn-primary px-8 py-3 text-lg"
+            disabled={answers.includes(null)}
+          >
+            Submit Assessment
+          </button>
+        </div>
       </form>
+
+      <div className="w-full flex justify-center mt-4">
+        <Toast message="Random answers generated!" show={showToast} onClose={handleToastClose} />
+      </div>
     </div>
   );
 } 
