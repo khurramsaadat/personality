@@ -16,10 +16,40 @@
       "static/chunks/main-app.js",
       "static/chunks/app/bigfive/page.js"
     ],
-    "/_not-found/page": [
+    "/bigfive/results/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/bigfive/results/page.js"
+    ],
+    "/empathy/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/empathy/page.js"
+    ],
+    "/empathy/results/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/empathy/results/page.js"
+    ],
+    "/news-judgment/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/news-judgment/page.js"
+    ],
+    "/news-judgment/results/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/news-judgment/results/page.js"
+    ],
+    "/cognitive-reflection/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/cognitive-reflection/page.js"
+    ],
+    "/cognitive-reflection/results/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/cognitive-reflection/results/page.js"
     ]
   }
 }

@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import Toast from '../../components/Toast';
+import { useRouter } from 'next/navigation';
+import { useAssessment } from '../../components/AssessmentContext';
 
 const bigFiveQuestions = [
   'I am the life of the party.',
@@ -68,6 +70,8 @@ export default function BigFivePage() {
   const [answers, setAnswers] = useState(Array(bigFiveQuestions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const router = useRouter();
+  const { setBigFiveAnswers } = useAssessment();
 
   const handleChange = (qIdx: number, value: string) => {
     const newAnswers = [...answers];
@@ -88,7 +92,10 @@ export default function BigFivePage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    // TODO: Save answers and navigate to results
+    if (!answers.includes(null)) {
+      setBigFiveAnswers(answers as string[]);
+      router.push('/bigfive/results');
+    }
   };
 
   return (

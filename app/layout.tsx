@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { AssessmentProvider } from '../components/AssessmentContext';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,9 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header />
-        <main className="min-h-[80vh] flex flex-col">{children}</main>
-        <Footer />
+        <AssessmentProvider>
+          <Header />
+          <main className="min-h-[80vh] flex flex-col">{children}</main>
+          <Footer />
+        </AssessmentProvider>
       </body>
     </html>
   )
