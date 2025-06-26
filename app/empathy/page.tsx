@@ -75,9 +75,9 @@ export default function EmpathyPage() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* Desktop Layout */}
+        {/* Desktop layout: table with custom visual radio buttons */}
         <div className="hidden md:block overflow-x-auto rounded-lg border border-gray-200 bg-white">
-          <table className="min-w-full border-separate border-spacing-y-4 text-sm">
+          <table className="min-w-full border-separate border-spacing-y-4 text-sm md:text-base">
             <thead>
               <tr>
                 <th className="text-left font-medium whitespace-nowrap px-2 py-2">&nbsp;</th>
@@ -89,19 +89,36 @@ export default function EmpathyPage() {
               </tr>
             </thead>
             <tbody>
-              {empathyQuestions.map((question, i) => (
+              {empathyQuestions.map((q, i) => (
                 <tr key={`desktop-q-${i}`} className="align-top">
-                  <td className="pr-2 text-gray-700 text-sm w-1/2 min-w-[180px]">{i + 1}. {question}</td>
+                  <td className="pr-2 text-gray-700 text-sm w-1/2 min-w-[180px] whitespace-pre-line">{i + 1}. {q}</td>
                   {scale.map((s) => (
                     <td key={s.value} className="text-center">
-                      <input
-                        type="radio"
-                        name={`question_${i}`}
-                        value={s.value}
-                        checked={answers[i] === s.value}
-                        onChange={() => handleChange(i, s.value)}
-                        className="radio-custom w-6 h-6"
-                      />
+                      {/* Visual radio button that matches mobile design */}
+                      <div 
+                        className="inline-flex items-center justify-center cursor-pointer p-1"
+                        onClick={() => handleChange(i, s.value)}
+                      >
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                          answers[i] === s.value 
+                            ? 'border-blue-600 bg-blue-600' 
+                            : 'border-gray-300 bg-white hover:border-blue-400'
+                        }`}>
+                          {answers[i] === s.value && (
+                            <div className="w-3 h-3 rounded-full bg-white"></div>
+                          )}
+                        </div>
+                        {/* Hidden native radio for form submission */}
+                        <input
+                          type="radio"
+                          name={`question_${i}`}
+                          value={s.value}
+                          checked={answers[i] === s.value}
+                          onChange={() => {}} // Controlled by div click
+                          className="sr-only"
+                          tabIndex={-1}
+                        />
+                      </div>
                     </td>
                   ))}
                 </tr>

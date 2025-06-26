@@ -93,24 +93,36 @@ export default function CognitiveReflectionPage() {
           <div className="hidden sm:block">
             <div className="grid grid-cols-2 gap-4">
               {questions[current].options.map((option, i) => (
-                <label
+                <div
                   key={i}
                   className={`flex items-center p-4 rounded-lg cursor-pointer transition-all duration-200 border-2 ${
                     answers[current] === option
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                   }`}
+                  onClick={() => handleChange(option)}
                 >
+                  <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
+                    answers[current] === option
+                      ? 'border-blue-500 bg-blue-500'
+                      : 'border-gray-300'
+                  }`}>
+                    {answers[current] === option && (
+                      <div className="w-2 h-2 rounded-full bg-white"></div>
+                    )}
+                  </div>
+                  <span className="font-medium text-gray-900">{option}</span>
+                  {/* Hidden native radio for form submission */}
                   <input
                     type="radio"
                     name={`question_${current}`}
                     value={option}
                     checked={answers[current] === option}
-                    onChange={() => handleChange(option)}
-                    className="radio-custom w-5 h-5 mr-3 cursor-pointer"
+                    onChange={() => {}} // Controlled by div click
+                    className="sr-only"
+                    tabIndex={-1}
                   />
-                  <span className="font-medium text-gray-900">{option}</span>
-                </label>
+                </div>
               ))}
             </div>
           </div>

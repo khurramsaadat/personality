@@ -24,36 +24,4 @@
   .input-field {
     @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200;
   }
-
-  /* Custom radio button styling for clear visual feedback */
-  .radio-custom {
-    @apply appearance-none border-2 border-gray-300 rounded-full cursor-pointer transition-all duration-200 ease-in-out;
-  }
-  
-  .radio-custom:checked {
-    @apply border-blue-600 bg-blue-600;
-    box-shadow: inset 0 0 0 3px white;
-  }
-  
-  /* Default size (mobile) */
-  .radio-custom:not(.w-6) {
-    @apply w-5 h-5;
-  }
-  
-  /* Large size (desktop) */
-  .radio-custom.w-6 {
-    @apply h-6;
-  }
-  
-  .radio-custom.w-6:checked {
-    box-shadow: inset 0 0 0 4px white;
-  }
-  
-  .radio-custom:hover {
-    @apply border-blue-400;
-  }
-  
-  .radio-custom:focus {
-    @apply outline-none ring-2 ring-blue-500 ring-opacity-50;
-  }
 } 
