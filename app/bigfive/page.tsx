@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Toast from '../../components/Toast';
 
 const bigFiveQuestions = [
   'I am the life of the party.',
@@ -66,12 +67,23 @@ const scale = [
 export default function BigFivePage() {
   const [answers, setAnswers] = useState(Array(bigFiveQuestions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
-  const handleChange = (qIdx: number, value: number) => {
+  const handleChange = (qIdx: number, value: string) => {
     const newAnswers = [...answers];
     newAnswers[qIdx] = value;
     setAnswers(newAnswers);
   };
+
+  const handleRandomAnswers = () => {
+    if (window.confirm('This will overwrite all your current answers with random selections. Continue?')) {
+      const randomAnswers = bigFiveQuestions.map(() => String(Math.floor(Math.random() * 5) + 1));
+      setAnswers(randomAnswers);
+      setShowToast(true);
+    }
+  };
+
+  const handleToastClose = () => setShowToast(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,8 +98,65 @@ export default function BigFivePage() {
         In the table below, for each statement 1–50, mark how much you agree with on the scale 1–5.
       </p>
       <form onSubmit={handleSubmit}>
-        <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-          <table className="min-w-full border-separate border-spacing-y-2 text-xs sm:text-sm md:text-base">
+        {/* Mobile layout: cards */}
+        <div className="flex flex-col gap-4 sm:hidden">
+          {bigFiveQuestions.map((q, i) => (
+            <div key={i} className="card border border-gray-200 rounded-lg p-4 bg-white">
+              <div className="mb-3 text-gray-900 font-medium text-base">{i + 1}. {q}</div>
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-4 justify-between">
+                  {[0, 1].map(idx => (
+                    <label key={scale[idx].value} className="flex items-center gap-2 flex-1">
+                      <input
+                        type="radio"
+                        name={`q${i}`}
+                        value={String(scale[idx].value)}
+                        checked={answers[i] === String(scale[idx].value)}
+                        onChange={() => handleChange(i, String(scale[idx].value))}
+                        className="accent-primary-600 w-6 h-6 cursor-pointer"
+                        required={i === 0}
+                      />
+                      <span className="text-xs font-medium text-gray-700">{scale[idx].label}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="flex gap-4 justify-between mt-1">
+                  {[3, 4].map(idx => (
+                    <label key={scale[idx].value} className="flex items-center gap-2 flex-1">
+                      <input
+                        type="radio"
+                        name={`q${i}`}
+                        value={String(scale[idx].value)}
+                        checked={answers[i] === String(scale[idx].value)}
+                        onChange={() => handleChange(i, String(scale[idx].value))}
+                        className="accent-primary-600 w-6 h-6 cursor-pointer"
+                        required={i === 0}
+                      />
+                      <span className="text-xs font-medium text-gray-700">{scale[idx].label}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="flex gap-4 justify-start mt-1">
+                  <label key={scale[2].value} className="flex items-center gap-2 flex-1">
+                    <input
+                      type="radio"
+                      name={`q${i}`}
+                      value={String(scale[2].value)}
+                      checked={answers[i] === String(scale[2].value)}
+                      onChange={() => handleChange(i, String(scale[2].value))}
+                      className="accent-primary-600 w-6 h-6 cursor-pointer"
+                      required={i === 0}
+                    />
+                    <span className="text-xs font-medium text-gray-700">{scale[2].label}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Desktop layout: table */}
+        <div className="hidden sm:block overflow-x-auto rounded-lg border border-gray-200 bg-white">
+          <table className="min-w-full border-separate border-spacing-y-6 text-sm md:text-base">
             <thead>
               <tr>
                 <th className="text-left font-medium whitespace-nowrap px-2 py-2">&nbsp;</th>
@@ -101,15 +170,15 @@ export default function BigFivePage() {
             <tbody>
               {bigFiveQuestions.map((q, i) => (
                 <tr key={i} className="align-top">
-                  <td className="pr-2 text-gray-700 text-xs sm:text-sm w-1/2 min-w-[180px] whitespace-pre-line">{i + 1}. {q}</td>
+                  <td className="pr-2 text-gray-700 text-sm w-1/2 min-w-[180px] whitespace-pre-line">{i + 1}. {q}</td>
                   {scale.map((s) => (
                     <td key={s.value} className="text-center">
                       <input
                         type="radio"
                         name={`q${i}`}
-                        value={s.value}
-                        checked={answers[i] === s.value}
-                        onChange={() => handleChange(i, s.value)}
+                        value={String(s.value)}
+                        checked={answers[i] === String(s.value)}
+                        onChange={() => handleChange(i, String(s.value))}
                         className="accent-primary-600 w-5 h-5 sm:w-6 sm:h-6 cursor-pointer"
                         required={i === 0}
                       />
@@ -123,9 +192,20 @@ export default function BigFivePage() {
         {submitted && answers.includes(null) && (
           <div className="text-red-600 mt-4 text-center">Please answer all questions before submitting.</div>
         )}
+        {/* Inline Toast above Random Answers button */}
+        <div className="w-full flex justify-center mb-2">
+          <Toast message="Random answers generated!" show={showToast} onClose={handleToastClose} />
+        </div>
+        <button
+          type="button"
+          onClick={handleRandomAnswers}
+          className="btn-secondary mb-4 w-full sm:w-auto px-8 py-3 text-lg"
+        >
+          Random Answers
+        </button>
         <button
           type="submit"
-          className="btn-primary mt-8 w-full sm:w-auto px-8 py-4 text-lg text-center"
+          className="btn-primary mt-4 w-full sm:w-auto px-8 py-4 text-lg text-center"
           disabled={answers.includes(null)}
         >
           Submit

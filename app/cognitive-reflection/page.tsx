@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Toast from '../../components/Toast';
 
 const questions = [
   {
@@ -21,6 +22,7 @@ export default function CognitiveReflectionPage() {
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
   const [current, setCurrent] = useState(0);
+  const [showToast, setShowToast] = useState(false);
   const router = useRouter();
 
   const handleChange = (value: string) => {
@@ -28,6 +30,16 @@ export default function CognitiveReflectionPage() {
     newAnswers[current] = value;
     setAnswers(newAnswers);
   };
+
+  const handleRandomAnswers = () => {
+    if (window.confirm('This will overwrite all your current answers with random selections. Continue?')) {
+      const randomAnswers = questions.map(q => q.options[Math.floor(Math.random() * q.options.length)]);
+      setAnswers(randomAnswers);
+      setShowToast(true);
+    }
+  };
+
+  const handleToastClose = () => setShowToast(false);
 
   const handleNext = () => {
     if (answers[current] === null) {
@@ -77,6 +89,9 @@ export default function CognitiveReflectionPage() {
             ))}
           </div>
         </div>
+        <div className="w-full flex justify-center mb-2">
+          <Toast message="Random answers generated!" show={showToast} onClose={handleToastClose} />
+        </div>
         <div className="flex justify-between mt-8">
           <button
             type="button"
@@ -93,6 +108,13 @@ export default function CognitiveReflectionPage() {
             {current === questions.length - 1 ? '→' : '→'}
           </button>
         </div>
+        <button
+          type="button"
+          onClick={handleRandomAnswers}
+          className="btn-secondary mb-4 w-full sm:w-auto px-8 py-3 text-lg mt-4"
+        >
+          Random Answers
+        </button>
       </form>
     </div>
   );

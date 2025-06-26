@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Toast from '../../components/Toast';
 
 const headlines = [
   'A Small Group of People Control the World Economy by Manipulating the Price of Gold and Oil',
@@ -28,6 +29,7 @@ const options = [
 export default function NewsJudgmentPage() {
   const [answers, setAnswers] = useState(Array(headlines.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const router = useRouter();
 
   const handleChange = (idx: number, value: string) => {
@@ -35,6 +37,17 @@ export default function NewsJudgmentPage() {
     newAnswers[idx] = value;
     setAnswers(newAnswers);
   };
+
+  const handleRandomAnswers = () => {
+    if (window.confirm('This will overwrite all your current answers with random selections. Continue?')) {
+      const optionValues = options.map(o => o.value);
+      const randomAnswers = headlines.map(() => optionValues[Math.floor(Math.random() * optionValues.length)]);
+      setAnswers(randomAnswers);
+      setShowToast(true);
+    }
+  };
+
+  const handleToastClose = () => setShowToast(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,9 +91,19 @@ export default function NewsJudgmentPage() {
         {submitted && answers.includes(null) && (
           <div className="text-red-600 mt-4">Please answer all questions before submitting.</div>
         )}
+        <div className="w-full flex justify-center mb-2">
+          <Toast message="Random answers generated!" show={showToast} onClose={handleToastClose} />
+        </div>
+        <button
+          type="button"
+          onClick={handleRandomAnswers}
+          className="btn-secondary mb-4 w-full sm:w-auto px-8 py-3 text-lg"
+        >
+          Random Answers
+        </button>
         <button
           type="submit"
-          className="btn-primary mt-8 px-8 py-3 text-lg"
+          className="btn-primary mt-4 px-8 py-3 text-lg w-full sm:w-auto"
           disabled={answers.includes(null)}
         >
           Submit
