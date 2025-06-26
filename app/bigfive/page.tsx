@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Toast from '../../components/Toast';
 import { useRouter } from 'next/navigation';
 import { useAssessment } from '../../components/AssessmentContext';
@@ -59,11 +59,11 @@ const bigFiveQuestions = [
 ];
 
 const scale = [
-  { value: 1, label: 'Disagree' },
-  { value: 2, label: 'Slightly Disagree' },
-  { value: 3, label: 'Neutral' },
-  { value: 4, label: 'Slightly Agree' },
-  { value: 5, label: 'Agree' },
+  { value: '1', label: 'Disagree' },
+  { value: '2', label: 'Slightly Disagree' },
+  { value: '3', label: 'Neutral' },
+  { value: '4', label: 'Slightly Agree' },
+  { value: '5', label: 'Agree' },
 ];
 
 export default function BigFivePage() {
@@ -73,11 +73,15 @@ export default function BigFivePage() {
   const router = useRouter();
   const { setBigFiveAnswers } = useAssessment();
 
-  const handleChange = (qIdx: number, value: string) => {
-    const newAnswers = [...answers];
-    newAnswers[qIdx] = value;
-    setAnswers(newAnswers);
-  };
+  // Ultra-simple, reliable change handler
+  const handleChange = useCallback((qIdx: number, value: string) => {
+    setAnswers(prev => {
+      const newAnswers = [...prev];
+      newAnswers[qIdx] = value;
+      console.log(`✅ Question ${qIdx + 1} answered: ${value}`, newAnswers);
+      return newAnswers;
+    });
+  }, []);
 
   const handleRandomAnswers = () => {
     if (window.confirm('This will overwrite all your current answers with random selections. Continue?')) {
@@ -105,62 +109,56 @@ export default function BigFivePage() {
         In the table below, for each statement 1–50, mark how much you agree with on the scale 1–5.
       </p>
       <form onSubmit={handleSubmit}>
-        {/* Mobile layout: cards */}
-        <div className="flex flex-col gap-4 sm:hidden">
-          {bigFiveQuestions.map((q, i) => (
-            <div key={i} className="card border border-gray-200 rounded-lg p-4 bg-white">
-              <div className="mb-3 text-gray-900 font-medium text-base">{i + 1}. {q}</div>
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-4 justify-between">
-                  {[0, 1].map(idx => (
-                    <label key={scale[idx].value} className="flex items-center gap-2 flex-1">
+        {/* Mobile layout: simple, direct radio button cards */}
+        <div className="flex flex-col gap-6 sm:hidden">
+          {bigFiveQuestions.map((question, qIndex) => (
+            <div key={qIndex} className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+              <h3 className="mb-4 text-gray-900 font-medium text-base leading-relaxed">
+                {qIndex + 1}. {question}
+              </h3>
+              <div className="space-y-3">
+                {scale.map((option) => {
+                  const isSelected = answers[qIndex] === option.value;
+                  return (
+                    <div 
+                      key={option.value} 
+                      className={`flex items-center p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                        isSelected 
+                          ? 'border-blue-500 bg-blue-50' 
+                          : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                      }`}
+                      onClick={() => handleChange(qIndex, option.value)}
+                    >
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mr-3 ${
+                        isSelected 
+                          ? 'border-blue-600 bg-blue-600' 
+                          : 'border-gray-300 bg-white'
+                      }`}>
+                        {isSelected && (
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
+                        )}
+                      </div>
+                      <span className="text-sm font-medium text-gray-700 flex-1">
+                        {option.value} = {option.label}
+                      </span>
+                      {/* Hidden native radio for form submission */}
                       <input
                         type="radio"
-                        name={`q${i}`}
-                        value={String(scale[idx].value)}
-                        checked={answers[i] === String(scale[idx].value)}
-                        onChange={() => handleChange(i, String(scale[idx].value))}
-                        className="accent-primary-600 w-6 h-6 cursor-pointer"
-                        required={i === 0}
+                        name={`question_${qIndex}`}
+                        value={option.value}
+                        checked={isSelected}
+                        onChange={() => {}} // Controlled by div click
+                        className="sr-only"
+                        tabIndex={-1}
                       />
-                      <span className="text-xs font-medium text-gray-700">{scale[idx].label}</span>
-                    </label>
-                  ))}
-                </div>
-                <div className="flex gap-4 justify-between mt-1">
-                  {[3, 4].map(idx => (
-                    <label key={scale[idx].value} className="flex items-center gap-2 flex-1">
-                      <input
-                        type="radio"
-                        name={`q${i}`}
-                        value={String(scale[idx].value)}
-                        checked={answers[i] === String(scale[idx].value)}
-                        onChange={() => handleChange(i, String(scale[idx].value))}
-                        className="accent-primary-600 w-6 h-6 cursor-pointer"
-                        required={i === 0}
-                      />
-                      <span className="text-xs font-medium text-gray-700">{scale[idx].label}</span>
-                    </label>
-                  ))}
-                </div>
-                <div className="flex gap-4 justify-start mt-1">
-                  <label key={scale[2].value} className="flex items-center gap-2 flex-1">
-                    <input
-                      type="radio"
-                      name={`q${i}`}
-                      value={String(scale[2].value)}
-                      checked={answers[i] === String(scale[2].value)}
-                      onChange={() => handleChange(i, String(scale[2].value))}
-                      className="accent-primary-600 w-6 h-6 cursor-pointer"
-                      required={i === 0}
-                    />
-                    <span className="text-xs font-medium text-gray-700">{scale[2].label}</span>
-                  </label>
-                </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))}
         </div>
+        
         {/* Desktop layout: table */}
         <div className="hidden sm:block overflow-x-auto rounded-lg border border-gray-200 bg-white">
           <table className="min-w-full border-separate border-spacing-y-6 text-sm md:text-base">
@@ -176,18 +174,17 @@ export default function BigFivePage() {
             </thead>
             <tbody>
               {bigFiveQuestions.map((q, i) => (
-                <tr key={i} className="align-top">
+                <tr key={`desktop-q-${i}`} className="align-top">
                   <td className="pr-2 text-gray-700 text-sm w-1/2 min-w-[180px] whitespace-pre-line">{i + 1}. {q}</td>
                   {scale.map((s) => (
                     <td key={s.value} className="text-center">
                       <input
                         type="radio"
-                        name={`q${i}`}
-                        value={String(s.value)}
-                        checked={answers[i] === String(s.value)}
-                        onChange={() => handleChange(i, String(s.value))}
-                        className="accent-primary-600 w-5 h-5 sm:w-6 sm:h-6 cursor-pointer"
-                        required={i === 0}
+                        name={`question_${i}`}
+                        value={s.value}
+                        checked={answers[i] === s.value}
+                        onChange={() => handleChange(i, s.value)}
+                        className="radio-custom w-6 h-6"
                       />
                     </td>
                   ))}
@@ -196,13 +193,16 @@ export default function BigFivePage() {
             </tbody>
           </table>
         </div>
+        
         {submitted && answers.includes(null) && (
           <div className="text-red-600 mt-4 text-center">Please answer all questions before submitting.</div>
         )}
+        
         {/* Inline Toast above Random Answers button */}
         <div className="w-full flex justify-center mb-2">
           <Toast message="Random answers generated!" show={showToast} onClose={handleToastClose} />
         </div>
+        
         <button
           type="button"
           onClick={handleRandomAnswers}
@@ -210,6 +210,7 @@ export default function BigFivePage() {
         >
           Random Answers
         </button>
+        
         <button
           type="submit"
           className="btn-primary mt-4 w-full sm:w-auto px-8 py-4 text-lg text-center"

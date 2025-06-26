@@ -1,8 +1,5 @@
 {
   "/bigfive/page": "app/bigfive/page.js",
-  "/bigfive/results/page": "app/bigfive/results/page.js",
-  "/news-judgment/page": "app/news-judgment/page.js",
-  "/news-judgment/results/page": "app/news-judgment/results/page.js",
-  "/cognitive-reflection/page": "app/cognitive-reflection/page.js",
-  "/page": "app/page.js"
+  "/database/page": "app/database/page.js",
+  "/bigfive/results/page": "app/bigfive/results/page.js"
 }
