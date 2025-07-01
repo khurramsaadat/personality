@@ -21,18 +21,17 @@ const questions = [
 export default function CognitiveReflectionPage() {
   const [answers, setAnswers] = useState<(string | null)[]>(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
-  const [current, setCurrent] = useState(0);
   const [showToast, setShowToast] = useState(false);
+  const [unanswered, setUnanswered] = useState<number[]>([]);
   const router = useRouter();
 
-  const handleChange = useCallback((value: string) => {
-    console.log(`Question ${current} answered: ${value}`);
+  const handleChange = useCallback((qIdx: number, value: string) => {
     setAnswers(prev => {
       const newAnswers = [...prev];
-      newAnswers[current] = value;
+      newAnswers[qIdx] = value;
       return newAnswers;
     });
-  }, [current]);
+  }, []);
 
   const handleRandomAnswers = () => {
     if (window.confirm('This will overwrite all your current answers with random selections. Continue?')) {
@@ -44,23 +43,18 @@ export default function CognitiveReflectionPage() {
 
   const handleToastClose = () => setShowToast(false);
 
-  const handleNext = () => {
-    if (answers[current] === null) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const missing = answers.map((a, i) => a === null ? i : -1).filter(i => i !== -1);
+    if (missing.length > 0) {
+      setUnanswered(missing);
       setSubmitted(true);
       return;
     }
+    setUnanswered([]);
     setSubmitted(false);
-    if (current < questions.length - 1) {
-      setCurrent(current + 1);
-    } else {
-      localStorage.setItem('crtAnswers', JSON.stringify(answers));
-      router.push('/cognitive-reflection/results');
-    }
-  };
-
-  const handlePrev = () => {
-    setSubmitted(false);
-    if (current > 0) setCurrent(current - 1);
+    localStorage.setItem('crtAnswers', JSON.stringify(answers));
+    router.push('/cognitive-reflection/results');
   };
 
   return (
@@ -70,123 +64,60 @@ export default function CognitiveReflectionPage() {
         <p className="text-gray-700 max-w-2xl mx-auto">
           Here are several items that vary in difficulty. Answer as best as you can.
         </p>
-        <div className="mt-4 text-sm text-gray-600">
-          Question {current + 1} of {questions.length}
-        </div>
       </div>
-
-      <form onSubmit={e => { e.preventDefault(); handleNext(); }}>
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-8">
-          {submitted && answers[current] === null && (
-            <div className="text-red-600 mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
-              <span className="font-bold">⚠️</span> Please answer this question before continuing.
-            </div>
-          )}
-          
-          <div className="mb-6">
-            <h3 className="text-lg font-medium text-gray-900 leading-relaxed">
-              {questions[current].text}
-            </h3>
-          </div>
-
-          {/* Desktop Layout */}
-          <div className="hidden sm:block">
-            <div className="grid grid-cols-2 gap-4">
-              {questions[current].options.map((option, i) => (
-                <div
-                  key={i}
-                  className={`flex items-center p-4 rounded-lg cursor-pointer transition-all duration-200 border-2 ${
-                    answers[current] === option
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
-                  onClick={() => handleChange(option)}
-                >
-                  <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
-                    answers[current] === option
-                      ? 'border-blue-500 bg-blue-500'
-                      : 'border-gray-300'
-                  }`}>
-                    {answers[current] === option && (
-                      <div className="w-2 h-2 rounded-full bg-white"></div>
-                    )}
-                  </div>
-                  <span className="font-medium text-gray-900">{option}</span>
-                  {/* Hidden native radio for form submission */}
-                  <input
-                    type="radio"
-                    name={`question_${current}`}
-                    value={option}
-                    checked={answers[current] === option}
-                    onChange={() => {}} // Controlled by div click
-                    className="sr-only"
-                    tabIndex={-1}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Mobile Layout */}
-          <div className="block sm:hidden space-y-3">
-            {questions[current].options.map((option, i) => (
-              <div
-                key={i}
-                className={`flex items-center p-4 rounded-lg cursor-pointer transition-all duration-200 border-2 ${
-                  answers[current] === option
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                }`}
-                onClick={() => handleChange(option)}
-              >
-                <input
-                  type="radio"
-                  name={`question_${current}`}
-                  value={option}
-                  checked={answers[current] === option}
-                  onChange={() => {}} // Handled by div onClick
-                  className="sr-only"
-                />
-                <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
-                  answers[current] === option
-                    ? 'border-blue-500 bg-blue-500'
-                    : 'border-gray-300'
-                }`}>
-                  {answers[current] === option && (
-                    <div className="w-2 h-2 rounded-full bg-white"></div>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900">{option}</div>
-                </div>
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-8">
+          {questions.map((q, qIdx) => (
+            <div key={qIdx} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="font-semibold text-lg text-gray-900">Question {qIdx + 1}:</span>
+                {submitted && unanswered.includes(qIdx) && (
+                  <span className="text-red-600 text-sm">(Please answer this question)</span>
+                )}
               </div>
-            ))}
+              <div className="mb-4 text-gray-900 font-medium leading-relaxed">{q.text}</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {q.options.map((option, i) => (
+                  <div
+                    key={i}
+                    className={`flex items-center p-4 rounded-lg cursor-pointer transition-all duration-200 border-2 ${
+                      answers[qIdx] === option
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
+                    onClick={() => handleChange(qIdx, option)}
+                  >
+                    <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
+                      answers[qIdx] === option
+                        ? 'border-blue-500 bg-blue-500'
+                        : 'border-gray-300'
+                    }`}>
+                      {answers[qIdx] === option && (
+                        <div className="w-2 h-2 rounded-full bg-white"></div>
+                      )}
+                    </div>
+                    <span className="font-medium text-gray-900">{option}</span>
+                    <input
+                      type="radio"
+                      name={`question_${qIdx}`}
+                      value={option}
+                      checked={answers[qIdx] === option}
+                      onChange={() => {}}
+                      className="sr-only"
+                      tabIndex={-1}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        {submitted && unanswered.length > 0 && (
+          <div className="text-red-600 mt-6 mb-2 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+            <span className="font-bold">⚠️</span> Please answer all questions before submitting. Unanswered: {unanswered.map(i => i + 1).join(', ')}
           </div>
-        </div>
-
-        <div className="flex justify-between items-center mb-6">
-          <button
-            type="button"
-            onClick={handlePrev}
-            disabled={current === 0}
-            className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-              current === 0 
-                ? 'text-gray-400 cursor-not-allowed bg-gray-100' 
-                : 'bg-gray-800 text-white hover:bg-gray-700'
-            }`}
-          >
-            ← Previous
-          </button>
-          
-          <button
-            type="submit"
-            className="px-6 py-3 rounded-lg font-medium transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700"
-          >
-            {current === questions.length - 1 ? 'Submit Assessment' : 'Next →'}
-          </button>
-        </div>
-
-        <div className="text-center">
+        )}
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4">
           <button
             type="button"
             onClick={handleRandomAnswers}
@@ -194,12 +125,15 @@ export default function CognitiveReflectionPage() {
           >
             Random Answers
           </button>
+          <button
+            type="submit"
+            className="px-8 py-3 rounded-lg font-medium transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 text-lg"
+          >
+            Submit Assessment
+          </button>
         </div>
       </form>
-
-      <div className="w-full flex justify-center mt-4">
-        <Toast message="Random answers generated!" show={showToast} onClose={handleToastClose} />
-      </div>
+      <Toast show={showToast} onClose={handleToastClose} message="Random answers selected!" />
     </div>
   );
 } 

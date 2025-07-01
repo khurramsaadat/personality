@@ -3,11 +3,10 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { HeartHandshake } from 'lucide-react';
 
-// Helper to calculate empathy score (A=1, B=2, ..., E=5)
+// Helper to calculate empathy score (answers are numbers as strings)
 function calculateEmpathyScore(answers: string[]): number {
-  const map: Record<string, number> = { A: 1, B: 2, C: 3, D: 4, E: 5 };
   return Math.round(
-    answers.reduce((sum, a) => sum + (map[a] || 0), 0) / answers.length
+    answers.reduce((sum, a) => sum + Number(a), 0) / answers.length
   );
 }
 
