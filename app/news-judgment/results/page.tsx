@@ -55,7 +55,7 @@ export default function NewsJudgmentResults({ searchParams }: { searchParams: { 
     <div className="max-w-2xl mx-auto py-10 px-4">
       <div className="flex items-center gap-3 mb-6">
         <Compass className="w-8 h-8 text-indigo-500" />
-        <h1 className="text-2xl font-bold">News Judgment Results</h1>
+        <h1 className="text-2xl font-bold text-sky-500">News Judgment Results</h1>
       </div>
       <div className="mb-6">
         <div className="text-lg font-semibold mb-2">Your Score: <span className="text-indigo-600">{score} / {newsQuestions.length}</span> ({percent}%)</div>

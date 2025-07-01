@@ -191,7 +191,7 @@ export default function ResultsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-sky-500 mb-4">
               Your Personality Assessment Results
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">

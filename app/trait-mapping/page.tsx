@@ -18,7 +18,7 @@ const traitColors = {
 export default function TraitMappingPage() {
   return (
     <div className="max-w-4xl mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-4 text-center">Trait Mapping & Score Calculation</h1>
+      <h1 className="text-3xl font-bold mb-4 text-center text-sky-500">Trait Mapping & Score Calculation</h1>
       <p className="mb-8 text-gray-700 text-center text-lg">
         Learn how your results are calculated for each assessment. See which questions map to which traits, how scores are computed, and what your results mean.
       </p>

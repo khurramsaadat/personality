@@ -104,7 +104,7 @@ export default function BigFivePage() {
 
   return (
     <div className="max-w-3xl mx-auto py-6 px-2 sm:px-4">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-center">Big Five Personality Inventory</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-center text-sky-500">Big Five Personality Inventory</h1>
       <p className="mb-6 text-gray-700 text-center text-base sm:text-lg">
         In the table below, for each statement 1–50, mark how much you agree with on the scale 1–5.
       </p>
@@ -220,21 +220,22 @@ export default function BigFivePage() {
           <Toast message="Random answers generated!" show={showToast} onClose={handleToastClose} />
         </div>
         
-        <button
-          type="button"
-          onClick={handleRandomAnswers}
-          className="btn-secondary mb-4 w-full sm:w-auto px-8 py-3 text-lg"
-        >
-          Random Answers
-        </button>
-        
-        <button
-          type="submit"
-          className="btn-primary mt-4 w-full sm:w-auto px-8 py-4 text-lg text-center"
-          disabled={answers.includes(null)}
-        >
-          Submit
-        </button>
+        <div className="flex flex-col-reverse sm:flex-row justify-between items-center mt-8 gap-4">
+          <button
+            type="button"
+            onClick={handleRandomAnswers}
+            className="w-32 sm:w-auto mt-4 sm:mt-0 self-start sm:self-auto border border-blue-500 text-blue-500 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-md px-4 py-2 text-xs font-medium transition"
+          >
+            Random Answers
+          </button>
+          <button
+            type="submit"
+            className="w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-md px-8 py-3 text-lg font-semibold transition"
+            disabled={answers.includes(null)}
+          >
+            Submit Assessment
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -69,7 +69,7 @@ export default function EmpathyResultsPage() {
   if (!answers) {
     return (
       <div className="max-w-2xl mx-auto py-12 px-4">
-        <h1 className="text-3xl font-bold mb-6">Empathy / Emotional Intelligence Results</h1>
+        <h1 className="text-3xl font-bold mb-6 text-sky-500">Empathy / Emotional Intelligence Results</h1>
         <p className="mb-4">No results found. Please complete the assessment first.</p>
         <Link href="/empathy" className="btn-secondary mr-4">Retake Empathy Assessment</Link>
         <Link href="/" className="btn-primary">Back to Home</Link>
@@ -86,7 +86,7 @@ export default function EmpathyResultsPage() {
     <div className="max-w-2xl mx-auto py-12 px-4">
       <div className="flex flex-col items-center mb-8">
         <HeartHandshake size={56} className="text-primary-600 mb-2" aria-hidden="true" />
-        <h1 className="text-3xl font-bold mb-2 text-center">Empathy / Emotional Intelligence Results</h1>
+        <h1 className="text-3xl font-bold mb-2 text-center text-sky-500">Empathy / Emotional Intelligence Results</h1>
         <p className="text-lg text-gray-700 text-center max-w-xl">{summary}</p>
       </div>
       {/* Score bar */}

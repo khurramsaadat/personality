@@ -66,7 +66,7 @@ export default function NewsJudgmentPage() {
   return (
     <div className="max-w-7xl mx-auto py-10 px-4">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-4">News Judgment Task</h1>
+        <h1 className="text-3xl font-bold mb-4 text-sky-500">News Judgment Task</h1>
         <p className="text-gray-700 max-w-4xl mx-auto">
           Below you are presented with 15 news headlines, some of which are real and others that have been fabricated. 
           Your task is to classify each headline as either "Real" or "Fake" based on your judgment.
@@ -177,17 +177,17 @@ export default function NewsJudgmentPage() {
           </div>
         )}
 
-        <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col-reverse sm:flex-row justify-between items-center mt-8 gap-4">
           <button
             type="button"
             onClick={handleRandomAnswers}
-            className="btn-secondary px-8 py-3 text-lg"
+            className="w-32 sm:w-auto mt-4 sm:mt-0 self-start sm:self-auto border border-blue-500 text-blue-500 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-md px-4 py-2 text-xs font-medium transition"
           >
             Random Answers
           </button>
           <button
             type="submit"
-            className="btn-primary px-8 py-3 text-lg"
+            className="w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-md px-8 py-3 text-lg font-semibold transition"
             disabled={answers.includes(null)}
           >
             Submit Assessment

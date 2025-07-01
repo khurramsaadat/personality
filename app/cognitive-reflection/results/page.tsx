@@ -44,7 +44,7 @@ export default function CRTResults({ searchParams }: { searchParams: { answers?:
     <div className="max-w-2xl mx-auto py-10 px-4">
       <div className="flex items-center gap-3 mb-6">
         <Lightbulb className="w-8 h-8 text-orange-500" />
-        <h1 className="text-2xl font-bold">Cognitive Reflection Test Results</h1>
+        <h1 className="text-2xl font-bold text-sky-500">Cognitive Reflection Test Results</h1>
       </div>
       <div className="mb-6">
         <div className="text-lg font-semibold mb-2">Your Score: <span className="text-orange-600">{score} / {crtQuestions.length}</span> ({percent}%)</div>

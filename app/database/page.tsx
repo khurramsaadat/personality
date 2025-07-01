@@ -5,7 +5,7 @@ import { assessmentQuestions } from "../../components/AssessmentContext";
 export default function DatabasePage() {
   return (
     <div className="max-w-3xl mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-4">Assessment Question Data Base</h1>
+      <h1 className="text-3xl font-bold mb-4 text-sky-500">Assessment Question Data Base</h1>
       <p className="mb-8 text-gray-700 text-base">
         Browse all assessment questions used in this app. Use the navigation bar to jump to each section.
       </p>

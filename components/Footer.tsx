@@ -14,7 +14,7 @@ export default function Footer() {
           <Link href="/about" className="hover:text-primary-600">About</Link>
           <Link href="/database" className="hover:underline">Data Base</Link>
           <Link href="/trait-mapping" className="hover:underline">Trait Mapping</Link>
-          <a href="mailto:contact@example.com" className="hover:text-primary-600">Contact</a>
+          <Link href="/contact" className="hover:text-primary-600">Contact</Link>
         </div>
       </div>
     </footer>

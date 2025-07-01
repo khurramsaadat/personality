@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { AssessmentProvider } from '../components/AssessmentContext';
+import Link from 'next/link';
 
 const inter = Inter({ subsets: ['latin'] })
 
