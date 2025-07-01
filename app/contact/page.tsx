@@ -1,76 +1,69 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { FaFacebookF, FaInstagram, FaXTwitter, FaLinkedinIn, FaTiktok } from "react-icons/fa6";
+
+const socials = [
+  { name: "Facebook", icon: FaFacebookF, url: "#" },
+  { name: "Instagram", icon: FaInstagram, url: "#" },
+  { name: "X (Twitter)", icon: FaXTwitter, url: "#" },
+  { name: "LinkedIn", icon: FaLinkedinIn, url: "#" },
+  { name: "TikTok", icon: FaTiktok, url: "#" },
+];
 
 export default function ContactPage() {
-  const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [showToast, setShowToast] = useState(false);
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  }
-
-  function handleSubmit(e: React.FormEvent) {
+  const handleEmailClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    setSubmitted(true);
-  }
+    try {
+      await navigator.clipboard.writeText("khurram.saadat@yahoo.com");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2500);
+      window.open("mailto:khurram.saadat@yahoo.com");
+    } catch {
+      // fallback: just open mailto
+      window.open("mailto:khurram.saadat@yahoo.com");
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto py-12 px-4">
-      <h1 className="text-3xl font-bold mb-6 text-sky-500">Contact</h1>
-      {submitted ? (
-        <div className="bg-green-50 border border-green-200 text-green-700 rounded-md p-6 text-center shadow">
-          <h2 className="text-xl font-semibold mb-2">Thank you!</h2>
-          <p>Your message has been received. We appreciate your feedback and will get back to you soon.</p>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-8 flex flex-col gap-6">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400 transition"
-              autoComplete="name"
-            />
+      <h1 className="text-3xl font-bold mb-6 text-sky-500">Contact Us</h1>
+      <p className="mb-6 text-lg text-gray-700">
+        Have questions, comments, or suggestions? We'd love to hear from you! Reach out anytime and we'll get back to you as soon as possible.
+      </p>
+      <div className="relative mb-8 flex flex-col items-start">
+        {showToast && (
+          <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-sky-600 text-white px-4 py-2 rounded shadow-lg z-10 animate-fade-in">
+            Email address copied!
           </div>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400 transition"
-              autoComplete="email"
-            />
-          </div>
-          <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-            <textarea
-              id="message"
-              name="message"
-              value={form.message}
-              onChange={handleChange}
-              required
-              rows={5}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400 transition resize-none"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-sky-500 text-white font-semibold py-3 rounded-md hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-400 text-lg transition"
+        )}
+        <a
+          href="mailto:khurram.saadat@yahoo.com"
+          onClick={handleEmailClick}
+          className="text-lg font-semibold text-sky-600 underline hover:text-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-400 transition cursor-pointer"
+        >
+          khurram.saadat@yahoo.com
+        </a>
+      </div>
+      <div className="flex gap-4 mb-8">
+        {socials.map(({ name, icon: Icon, url }) => (
+          <a
+            key={name}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={name}
+            className="bg-gray-100 hover:bg-sky-100 text-sky-600 p-3 rounded-full shadow transition focus:outline-none focus:ring-2 focus:ring-sky-400"
           >
-            Send Message
-          </button>
-        </form>
-      )}
+            <Icon className="w-5 h-5" />
+          </a>
+        ))}
+      </div>
+      <p className="text-sm text-gray-500">
+        Your information will be kept confidential and used only to respond to your inquiry.
+      </p>
     </div>
   );
 } 
