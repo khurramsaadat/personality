@@ -1,14 +1,14 @@
 "use client";
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, BarChart3, Heart, Users, Brain } from 'lucide-react';
 
 const navLinks = [
   { href: '/', label: 'Home' },
-  { href: '/bigfive', label: 'Big Five' },
-  { href: '/empathy', label: 'Empathy' },
-  { href: '/news-judgment', label: 'News Judgment' },
-  { href: '/cognitive-reflection', label: 'CRT' },
+  { href: '/bigfive', label: 'Big Five', icon: <BarChart3 className="inline w-5 h-5 text-blue-400 mr-1" /> },
+  { href: '/empathy', label: 'Empathy', icon: <Heart className="inline w-5 h-5 text-pink-400 mr-1" /> },
+  { href: '/news-judgment', label: 'News Judgment', icon: <Users className="inline w-5 h-5 text-indigo-400 mr-1" /> },
+  { href: '/cognitive-reflection', label: 'CRT', icon: <Brain className="inline w-5 h-5 text-orange-400 mr-1" /> },
 ];
 
 export default function Header() {
@@ -22,7 +22,8 @@ export default function Header() {
         <ul className="hidden md:flex gap-4 md:gap-8">
           {navLinks.map(link => (
             <li key={link.href}>
-              <Link href={link.href} className="text-gray-700 hover:text-primary-600 font-medium transition-colors duration-150">
+              <Link href={link.href} className="text-gray-700 hover:text-primary-600 font-medium transition-colors duration-150 flex items-center gap-1">
+                {link.icon}
                 {link.label}
               </Link>
             </li>
@@ -44,9 +45,10 @@ export default function Header() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="block py-2 text-gray-700 hover:text-primary-600 font-medium transition-colors duration-150"
+                    className="block py-2 text-gray-700 hover:text-primary-600 font-medium transition-colors duration-150 flex items-center gap-1"
                     onClick={() => setOpen(false)}
                   >
+                    {link.icon}
                     {link.label}
                   </Link>
                 </li>
